@@ -9,11 +9,11 @@ async function consumeAPI(signal) {
   const reader = response.body
     .pipeThrough(new TextDecoderStream()) // From binary to JSON
     .pipeThrough(parseNDJSON())
-    .pipeTo(new WritableStream({
-      write(chunk) {
-        console.log(++counter, chunk)
-      }
-    }));
+  // .pipeTo(new WritableStream({
+  //   write(chunk) {
+  //     console.log(++counter, chunk)
+  //   }
+  // }));
 
   return reader;
 }
