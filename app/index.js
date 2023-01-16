@@ -1,11 +1,11 @@
 const API_URL = 'http://localhost:3000';
+let counter = 0;
 
 async function consumeAPI(signal) {
   const response = await fetch(API_URL, {
     signal
   });
 
-  let counter = 0;
   const reader = response.body
     .pipeThrough(new TextDecoderStream()) // From binary to JSON
     .pipeThrough(parseNDJSON())
@@ -24,13 +24,16 @@ function appendToHTML(element) {
       const card = `
         <article>
           <div class="text">
-            <h3>${title}</h3>
-            <p>${description}</p>
+            <h3>[${++counter}] ${title}</h3>
+            <p>${description.slice(0, 97)}...</p>
             <a href="${url_anime}">Here's why</a>
           </div>
         </article>
       `
       element.innerHTML += card;
+    },
+    abort(reason) {
+      console.log('aborted**', reason)
     }
   })
 }
