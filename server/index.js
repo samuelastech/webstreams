@@ -21,6 +21,8 @@ createServer(async (request, response) => {
 
   let items = 0;
 
+  request.once('close', () => console.log('connection was closed\nitems processed: ', items))
+
   Readable.toWeb(createReadStream('./animeflv.csv'))
     .pipeThrough(Transform.toWeb(csvtojson()))
     .pipeThrough(new TransformStream({
