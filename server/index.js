@@ -1,7 +1,8 @@
 import { createServer } from 'node:http';
 import { createReadStream } from 'node:fs';
-import { Readable } from 'node:stream';
-import { WritableStream } from 'node:stream/web';
+import { Readable, Transform } from 'node:stream';
+import { WritableStream, TransformStream } from 'node:stream/web';
+import csvtojson from 'csvtojson';
 
 const PORT = 3000;
 
@@ -20,6 +21,7 @@ createServer(async (request, response) => {
   let items = 0;
 
   Readable.toWeb(createReadStream('./animeflv.csv'))
+    .pipeThrough(Transform.toWeb(csvtojson()))
     .pipeTo(new WritableStream({
       write(chunk) {
         items++;
