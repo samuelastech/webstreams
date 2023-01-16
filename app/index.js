@@ -7,7 +7,7 @@ async function consumeAPI(signal) {
 
   let counter = 0;
   const reader = response.body
-    .pipeThrough(new TextDecoderStream())
+    .pipeThrough(new TextDecoderStream()) // From binary to JSON
     .pipeThrough(parseNDJSON())
     .pipeTo(new WritableStream({
       write(chunk) {
@@ -16,6 +16,23 @@ async function consumeAPI(signal) {
     }));
 
   return reader;
+}
+
+function appendToHTML(element) {
+  return new WritableStream({
+    write({ title, description, url_anime }) {
+      const card = `
+        <article>
+          <div class="text">
+            <h3>${title}</h3>
+            <p>${description}</p>
+            <a href="${url_anime}">Here's why</a>
+          </div>
+        </article>
+      `
+      element.innerHTML += card;
+    }
+  })
 }
 
 function parseNDJSON() {
@@ -35,5 +52,13 @@ function parseNDJSON() {
   });
 }
 
+// Getting the elements
+const [
+  start,
+  stop,
+  cards
+] = ['start', 'stop', 'cards'].map(item => document.getElementById(item))
+
 const abortController = new AbortController();
-await consumeAPI(abortController.signal);
+const readable = await consumeAPI(abortController.signal);
+readable.pipeTo(appendToHTML(cards));
