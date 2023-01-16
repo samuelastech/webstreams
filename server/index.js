@@ -22,6 +22,18 @@ createServer(async (request, response) => {
 
   Readable.toWeb(createReadStream('./animeflv.csv'))
     .pipeThrough(Transform.toWeb(csvtojson()))
+    .pipeThrough(new TransformStream({
+      transform(chunk, controller) {
+        const data = JSON.parse(Buffer.from(chunk));
+        const mappedData = JSON.stringify({
+          title: data.title,
+          description: data.description,
+          url_anime: data.url_anime,
+        }).concat('\n');
+
+        controller.enqueue(mappedData);
+      }
+    }))
     .pipeTo(new WritableStream({
       write(chunk) {
         items++;
