@@ -59,6 +59,15 @@ const [
   cards
 ] = ['start', 'stop', 'cards'].map(item => document.getElementById(item))
 
-const abortController = new AbortController();
-const readable = await consumeAPI(abortController.signal);
-readable.pipeTo(appendToHTML(cards));
+let abortController = new AbortController();
+
+start.addEventListener('click', async () => {
+  const readable = await consumeAPI(abortController.signal);
+  readable.pipeTo(appendToHTML(cards));
+});
+
+stop.addEventListener('click', () => {
+  abortController.abort();
+  console.log('aborting...');
+  abortController = new AbortController();
+})
