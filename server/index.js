@@ -1,4 +1,5 @@
 import { createServer } from 'node:http';
+import { createReadStream } from 'node:fs';
 
 const PORT = 3000;
 
@@ -14,8 +15,10 @@ createServer(async (request, response) => {
     return;
   }
 
-  response.writeHead(200, headers)
-  response.end('ok');
+  createReadStream('./animeflv.csv')
+    .pipe(response);
+
+  response.writeHead(200, headers);
 })
   .listen(PORT)
   .on('listening', () => console.log(`server is running at ${PORT}`))
