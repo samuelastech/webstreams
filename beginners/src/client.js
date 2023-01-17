@@ -28,3 +28,9 @@ stream
       cb(null, JSON.stringify(item));
     },
   }))
+  .pipe(new Writable({
+    write(chunk, encode, cb) {
+      console.log(chunk.toString())
+      cb();
+    },
+  }))
