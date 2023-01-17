@@ -18,7 +18,13 @@ stream
   .pipe(new Transform({
     transform(chunk, encode, cb) {
       const item = JSON.parse(chunk);
-      console.log(item);
-      cb();
+      let name = item.name
+      const myNumber = /\d+/.exec(name)[0];
+
+      if (myNumber % 2 === 0) name = name.concat(' é par');
+      else name = name.concat(' é ímpar');
+      item.name = name;
+
+      cb(null, JSON.stringify(item));
     },
   }))
