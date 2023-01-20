@@ -21,7 +21,17 @@ createServer(async (request, response) => {
 
   let items = 0;
 
-  request.once('close', () => console.log('connection was closed\nitems processed: ', items))
+  request.once('close', () => {
+    /**
+     * The connections is only being closed on the client.
+     * Here, in the server, the items will be processed and stored -- back
+     * pressuring concept.
+     * 
+     * To close the connection here we need to user AbortController as well and
+     * pass it to our pipeline, so nothing else will be processed and stored.
+     */
+    console.log('connection was closed\nitems processed: ', items)
+  })
 
   Readable.toWeb(createReadStream('./animeflv.csv'))
     .pipeThrough(Transform.toWeb(csvtojson()))
